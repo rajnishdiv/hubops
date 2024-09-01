@@ -1,0 +1,95 @@
+---
+microapp:
+  microId: hubops-service
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui-custom.html
+  operationsSorter: method
+server:
+  port: 9090
+  servlet:
+    context-path: /hubops-service
+logging:
+  pattern:
+    level: "%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]"
+management:
+  tracing:
+    sampling:
+      probability: 1
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  metrics:
+    tags:
+      application: observability-demo
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: true
+spring:
+  datasource:
+    url: jdbc:redshift://mdm-prod-redshift-cluster.cfqxizigixlg.ap-south-1.redshift.amazonaws.com:5439/prod_gati_warehouse
+    password: nUrum?chesWlPR46oSto
+    username: read_write_gati_1
+    driver-class-name: com.amazon.redshift.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      show-sql: "true"
+      ddl-auto: none
+  application:
+    name: HUBOPS-SERVICE
+security:
+  bff:
+    enabled: true
+  core:
+    enabled: false
+  session:
+    timeout: 1800000
+  secure-url-pattern:
+    servlet: /secure/*
+  cors:
+    allowed-origins: "*"
+    allowed-headers: X-Requested-With,Origin,Content-Type,Accept,Access-Control-Allow-Origin,Access-Control-Allow-Headers,authorization,officeId,officeCode,correlationId,journeyId,originUserType,userId,isAdmin
+    exposed-headers: authorization
+    allowed-methods: GET,POST,PUT,OPTIONS
+restTemplate:
+  connectionPool:
+    maxPerRoute: 10
+    maxConnections: 10
+cors:
+  allow-credentials: true
+  allowed-origin: http://localhost:4200
+  allowed-header: "*"
+  allowed-method: "*"
+app-configuration:
+  trip-status:
+    vehicle-standing-scan-not-started: 2
+  arriving-status:
+    arriving-in-km: 20
+    no-response-from-vts-in-minute: 60
+  cloud:
+    discovery:
+      client:
+        simple:
+          instance:
+            prefer-ip: true
+    netflix:
+      eureka:
+        client:
+          service-url:
+            defaultZone: http://localhost:8761/eureka/
+eureka:
+  instance:
+    prefer-ip-address: false
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
