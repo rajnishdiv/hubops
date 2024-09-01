@@ -1,0 +1,161 @@
+microapp:
+  microId: grant-service
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui-custom.html
+  operationsSorter: method  
+server:
+  port: 9080
+  servlet:
+    context-path: /grant-service
+
+#logging:
+#  pattern:
+#    level: 'trace_id=%mdc{trace_id} span_id=%mdc{span_id} trace_flags=%mdc{trace_flags} %5p'
+#    
+#management:
+#  tracing:
+#    sampling:
+#      probability: 1
+#  endpoints:
+#    web:
+#      exposure:
+#        include: '*' #health,info,prometheus,metrics
+#  metrics:
+#    tags:
+#      application: ${microapp.microId}
+##    distribution:
+##      percentiles-histogram:
+##        http:
+##          server:
+##            requests: true    
+ 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+#  otlp:
+#    metrics:
+#      export:
+#        url: http://localhost:4318/v1/metrics
+#        step: 10s
+#    tracing:
+#      endpoint: http://localhost:4318/v1/traces
+#      export:
+#        step: 10s # Export interval set to 10 seconds
+  tracing:
+    sampling:
+      probability: 1.0 
+    
+#debug: true
+redis:
+  master:
+    host: localhost
+    port: 6379
+
+jwt-token:
+  key: 2247dff328535684461885044bfa8c9e2242818f4850edf30c19ae0e60fcf9f496f0a025c21392ee0390366f3ca7090de2f243d1430e6c098364fe174e853991
+  issuer: AllCargo
+  custom-claim-key: 2e6442f552c7f40698430ccf8d3d7f9e3a86895d6f1be338cced6dd6d4c95f56c97aa1606cd0672707940123e6490f2eed169d5bfca7126752f0aa19648abbfc
+
+service:
+  authnz:
+    url: <auth-service-core-url>
+  mdm-user-management:
+    url: <user-management-api-url>
+  lookup:
+    url: <lookup-data-service-api-url>
+  office:
+    url: <office-service-url>
+# Redis cache configuration
+  redis:
+    host: localhost # Redis server host
+    port: 6400 # Redis server port
+    database: 0 # Redis database index
+    password: # Redis server password (leave blank if no password)
+    timeout: 3000 # Connection timeout in milliseconds
+    lettuce:
+      pool:
+        max-active: 8 # Maximum number of active connections in the pool
+        max-idle: 8 # Maximum number of idle connections in the pool
+        min-idle: 2 # Minimum number of idle connections in the pool
+        max-wait: -1 # Maximum time to wait for a connection from the pool (-1 means no timeout)
+# caching config for auth and lookup
+caching:
+  lookup:
+    cache-prefix: alcg
+    cache-name: lookup
+    expiry-time-in-days: 30
+# security configuration
+security:
+  bff:
+    enabled: true
+  core:
+    enabled: false
+  session:
+    timeout: 1800000
+  secure-url-pattern:
+    servlet: /secure/*
+#  realm-name: grant
+  cors:
+    allowed-origins: "*"
+    allowed-headers: X-Requested-With,Origin,Content-Type,Accept,Access-Control-Allow-Origin,Access-Control-Allow-Headers,authorization,officeId,officeCode,correlationId,journeyId,originUserType,userId,isAdmin
+    exposed-headers: authorization
+    allowed-methods: GET,POST,PUT,OPTIONS
+
+#SSO Redirect URL
+alcg:
+  login.url: grant-service
+  sso.url: <auth-bff-service-url>
+  logout.url: logout
+
+#security:
+#  cors:
+#    allowed-origins: "*"
+#    allowed-headers: X-Requested-With,Origin,Content-Type,Accept,Access-Control-Allow-Headers,Access-Control-Request-Headers,Access-Control-Request-Method,authorization,officeId,officeCode,correlationId,journeyId,originUserType,userId,isAdmin
+#    exposed-headers: authorization
+#    allowed-methods: GET,POST,PUT,OPTION
+    
+message:
+  success: Success
+
+
+restTemplate:
+  connectionPool:
+    maxPerRoute: 10
+    maxConnections: 10
+    
+#spring:
+#  datasource:    
+#    url: jdbc:postgresql://topaz-dev-poc-newdb-cluster.cluster-cvzxoaohm9ei.ap-south-1.rds.amazonaws.com/Profile?currentSchema=dbo
+#    password: 'topazdev#123'
+#    username: postgres
+#    initialize: 'true'
+#  jpa:
+#    properties:
+#      hibernate:
+#        dialect: org.hibernate.dialect.PostgreSQLDialect
+#    hibernate:
+#      show-sql: 'true'
+#      ddl-auto: none
+spring:
+  datasource:
+    url: jdbc:redshift://mdm-prod-redshift-cluster.cfqxizigixlg.ap-south-1.redshift.amazonaws.com:5439/prod_gati_warehouse
+    password: nUrum?chesWlPR46oSto
+    username: read_write_gati_1
+    driver-class-name: com.amazon.redshift.jdbc.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      show-sql: "true"
+      ddl-auto: none
+  application:
+    name: grant-service
+       
+    
+

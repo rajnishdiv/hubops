@@ -1,0 +1,55 @@
+---
+microapp:
+  microId: hubops-bff
+server:
+  port: 9091
+  servlet:
+    context-path: /hubops-bff
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui-custom.html
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+  tracing:
+    sampling:
+      probability: 1
+service:
+  base-uri: http://localhost:8080/hubops-service
+restTemplate:
+  connectionPool:
+    maxPerRoute: 10
+    maxConnections: 10
+spring:
+  application:
+    name: hubops-bff
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: hubops-service
+            uri: lb://HUBOPS-SERVICE
+            predicates:
+              - Path=/hubops-service/**
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+      enabled: true
+    fetch-registry: true
+    register-with-eureka: true
+  instance:
+    hostname: localhost
+    ip-address: localhost
+logging:
+  level:
+    org: null
+    springframework:
+      cloud: null
+      netflix:
+        eureka: DEBUG
+      openfeign: DEBUG

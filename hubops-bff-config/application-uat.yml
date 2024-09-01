@@ -1,0 +1,63 @@
+microapp:
+  microId: hubops-bff
+server:
+  port: 9091
+  servlet:
+    context-path: /hubops-bff
+    
+    
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui-custom.html  
+    
+ 
+#logging:
+#  pattern:
+#    level: 'trace_id=%mdc{trace_id} span_id=%mdc{span_id} trace_flags=%mdc{trace_flags} %5p'
+    
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+#  otlp:
+#    metrics:
+#      export:
+#        url: http://localhost:4318/v1/metrics
+#        step: 10s
+#    tracing:
+#      endpoint: http://localhost:4318/v1/traces
+#      export:
+#        step: 10s # Export interval set to 10 seconds
+  tracing:
+    sampling:
+      probability: 1.0     
+    
+service:
+  base-uri: http://localhost:8080/hubops-service
+  
+restTemplate:
+  connectionPool:
+    maxPerRoute: 10
+    maxConnections: 10 
+    
+spring:   
+  application:
+    name: hubops-bff
+  cloud:
+    gateway:
+      mvc:
+        routes:
+          - id: hubops-service
+            uri: lb://hubops-service
+            predicates:
+              - Path=/hubops-service/**
+eureka:
+  instance:
+    prefer-ip-address: false
+    hostname: localhost
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
